@@ -3,41 +3,37 @@ package com.example.hmr.controller;
 import com.example.hmr.model.Quarto;
 import com.example.hmr.model.Reserva;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public class ReservaRequest {
 
+    @NotBlank
+    private String reservadoPara;
     @NotNull
     @FutureOrPresent
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate checkIn;
 
     @NotNull
-    @Future
+    @FutureOrPresent
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate checkOut;
 
     public ReservaRequest() {
     }
 
-    public ReservaRequest(LocalDate checkIn, LocalDate checkOut) {
+    public ReservaRequest(String reservadoPara, LocalDate checkIn, LocalDate checkOut) {
+        this.reservadoPara = reservadoPara;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
     }
 
     public Reserva toModel(Quarto quartoReservado) {
-
-        if (quartoReservado.getReservaAtiva()) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Esse quarto já possui reserva ativa.");
-        }
-
-        return new Reserva(quartoReservado, checkIn, checkOut);
+        return new Reserva(reservadoPara, checkIn, checkOut);
     }
 
     public LocalDate getCheckIn() {
@@ -46,5 +42,9 @@ public class ReservaRequest {
 
     public LocalDate getCheckOut() {
         return checkOut;
+    }
+
+    public String getReservadoPara() {
+        return reservadoPara;
     }
 }

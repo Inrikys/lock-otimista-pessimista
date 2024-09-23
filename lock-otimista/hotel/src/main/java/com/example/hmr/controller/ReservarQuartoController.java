@@ -34,7 +34,7 @@ public class ReservarQuartoController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Quarto não cadastrado."));
 
         Reserva novaReserva = request.toModel(quarto);
-        quarto.reservarQuarto(novaReserva);
+        quarto.ativarReserva();
 
         this.reservaRepository.save(novaReserva);
 

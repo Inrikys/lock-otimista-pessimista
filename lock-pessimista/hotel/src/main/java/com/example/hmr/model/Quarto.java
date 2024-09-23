@@ -1,7 +1,12 @@
 package com.example.hmr.model;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Quarto {
@@ -23,6 +28,12 @@ public class Quarto {
     @Column(nullable = false)
     private Boolean isReservaAtiva = false;
 
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<Reserva> reservas = new ArrayList<>();
+
+    @Version
+    private int versao;
+
     @Deprecated
     /**
      * @deprecated uso exclusivo do hibernate
@@ -41,7 +52,15 @@ public class Quarto {
         return id;
     }
 
-    public void ativarReserva() {
+    public void reservarQuarto(Reserva novaReserva) {
+
+        if (getReservaAtiva()) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Esse quarto já possui reserva ativa.");
+        }
+
+        novaReserva.setQuartoReservado(this);
+        this.reservas.add(novaReserva);
+
         this.isReservaAtiva = true;
     }
 
